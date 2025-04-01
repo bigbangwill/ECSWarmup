@@ -19,7 +19,6 @@ public class SubSceneLoader : MonoBehaviour
         SceneSystem.LoadSceneAsync(CustomBootstrap.World1.Unmanaged, SubSceneForWorld1.SceneGUID, loadParameters);
         SceneSystem.LoadSceneAsync(CustomBootstrap.World2.Unmanaged, SubSceneForWorld2.SceneGUID, loadParameters);
     }
-
 }
 
 public class CustomBootstrap : ICustomBootstrap
@@ -45,9 +44,6 @@ public class CustomBootstrap : ICustomBootstrap
 
         // Optionally set one as the default injection world.
         World.DefaultGameObjectInjectionWorld = World1;
-
-        // Return true to disable the default bootstrap.
-        Debug.Log("Here");
         return true;
     }
 }

@@ -23,6 +23,11 @@ public class EnemyAuthoring : MonoBehaviour
 [UpdateInGroup(typeof(SimulationSystemGroup))]
 public partial struct EnemyMovementSystem : ISystem
 {
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<PlayerTag>();
+    }
+
     public void OnUpdate(ref SystemState state)        
     {
         Entity targetEntity = SystemAPI.GetSingletonEntity<PlayerTag>();
@@ -31,7 +36,7 @@ public partial struct EnemyMovementSystem : ISystem
         foreach (var (moveDirection, localPos) in SystemAPI.Query<RefRW<MoveDirectionData>, RefRO<LocalTransform>>().WithAll<EnemyTag>())
         {
             float2 direction = targetPos.xy - localPos.ValueRO.Position.xy;
-            float2 directionMag = math.normalize(direction);
+            float2 directionMag = math.normalizesafe(direction);
             moveDirection.ValueRW.Value = new float3(directionMag, 0);
         }
     }
