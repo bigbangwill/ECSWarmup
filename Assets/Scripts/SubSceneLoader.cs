@@ -1,5 +1,6 @@
 using System.Data.Common;
 using Unity.Entities;
+using Unity.Rendering;
 using Unity.Scenes;
 using UnityEngine;
 using UnityEngine.Rendering;
