@@ -13,6 +13,7 @@ public struct InitializeCharacterFlag : IComponentData, IEnableableComponent { }
 public struct  PlayerFixedStats : IComponentData
 {
     public int maxHp;
+    public float3 startingPos;
 }
 
 public class PlayerAuthoring : MonoBehaviour
@@ -23,11 +24,12 @@ public class PlayerAuthoring : MonoBehaviour
         public override void Bake(PlayerAuthoring authoring)
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-            AddComponent(entity, new PlayerFixedStats { maxHp = 100 });
+            AddComponent(entity, new PlayerFixedStats { maxHp = 100, startingPos = authoring.transform.position });
             AddComponent(entity, new MovementSpeed { Value = 3 });
             AddComponent<MoveDirectionData>(entity);
             AddComponent<PlayerTag>(entity);
             AddComponent<InitializeCharacterFlag>(entity);
+            AddComponent<MovableObjects>(entity);
         }
     }
 }
@@ -67,28 +69,5 @@ public partial class PlayerInputSystem : SystemBase
         {
             moveDirection.ValueRW.Value = new float3(currentInput, 0);
         }
-
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            foreach (var (mat, entity) in SystemAPI.Query<MaterialMeshInfo>().WithEntityAccess())
-            {
-                //ecb.AddComponent<DisableRendering>(entity);
-                commandBuffer.AddComponent<DisableRendering>(entity);
-            }
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            foreach (var (mat, entity) in SystemAPI.Query<MaterialMeshInfo>().WithEntityAccess().WithAll<DisableRendering>())
-            {
-                //ecb.RemoveComponent<DisableRendering>(entity);
-                commandBuffer.RemoveComponent<DisableRendering>(entity);
-            }
-        }
-
-        //ecb.Playback(EntityManager);
-
-
-
     }
 }

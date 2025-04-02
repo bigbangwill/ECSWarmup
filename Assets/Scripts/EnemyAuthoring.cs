@@ -16,6 +16,7 @@ public class EnemyAuthoring : MonoBehaviour
             AddComponent<MoveDirectionData>(entity);
             AddComponent(entity, new MovementSpeed { Value = 1 });
             AddComponent<InitializeCharacterFlag>(entity);
+            AddComponent<MovableObjects>(entity);
         }
     }
 }

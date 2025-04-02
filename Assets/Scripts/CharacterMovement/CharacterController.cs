@@ -3,6 +3,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Burst;
+using Unity.Transforms;
 
 public struct MoveDirectionData : IComponentData
 {
@@ -14,7 +15,10 @@ public struct MovementSpeed : IComponentData
     public float Value;
 }
 
-[BurstCompile]
+public struct MovableObjects : IComponentData { }
+
+
+[UpdateInGroup(typeof(SimulationSystemGroup))]
 public partial struct CharacterMovementSystem : ISystem
 {
     [BurstCompile]
@@ -24,5 +28,34 @@ public partial struct CharacterMovementSystem : ISystem
         {
             velocity.ValueRW.Linear = moveDirection.Value * moveSpeed.Value;
         }
+        
+        
     }
+}
+
+
+[UpdateAfter(typeof(CharacterMovementSystem))]
+[UpdateInGroup(typeof(PresentationSystemGroup))]
+public partial struct ObjectOffsetSystem : ISystem
+{
+    [BurstCompile]
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<PlayerTag>();
+    }
+
+    [BurstCompile]
+    public void OnUpdate(ref SystemState state)
+    {
+        Entity playerEntity = SystemAPI.GetSingletonEntity<PlayerTag>();
+        LocalTransform playerPos = SystemAPI.GetComponent<LocalTransform>(playerEntity);
+        float3 playerStartingPos = SystemAPI.GetComponent<PlayerFixedStats>(playerEntity).startingPos;
+        float3 movedDistance = playerPos.Position - playerStartingPos;
+
+        foreach (var transform in SystemAPI.Query<RefRW<LocalTransform>>())
+        {
+            transform.ValueRW.Position -= movedDistance;
+        }
+    }
+
 }
